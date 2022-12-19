@@ -2,11 +2,11 @@
     <div>
         <!-- 360 Viewer Container -->
         <div class="v360-viewer-container" ref="viewerContainer" :id="identifier">
-            
+
             <!-- 360 Viewer Header -->
             <slot name="header"></slot>
             <!--/ 360 Viewer Header -->
-            
+
             <!-- Percentage Loader -->
             <div class="v360-viewport" v-if="!imagesLoaded">
                 <div class="v360-spinner-grow"></div>
@@ -16,21 +16,15 @@
 
             <!-- 360 viewport -->
             <div class="v360-viewport" ref="viewport">
-                <canvas 
-                    class="v360-image-container" 
+                <canvas
+                    class="v360-image-container"
                     ref="imageContainer"
                     v-hammer:pinch="onPinch"
                     v-hammer:pinchend="onPinch"
                     v-hammer:pinchout="onPinchOut"
                     v-hammer:pinchin="onPinchIn"
                 ></canvas>
-                <div class="v360-product-box-shadow" 
-                    v-if="boxShadow"
-                    v-hammer:pinch="onPinch"
-                    v-hammer:pinchend="onPinch"
-                    v-hammer:pinchout="onPinchOut"
-                    v-hammer:pinchin="onPinchIn"
-                ></div>
+
             </div>
             <!--/ 360 viewport -->
 
@@ -84,6 +78,7 @@ const uuidv1 = require('uuid/v1');
 
 export default {
     name: 'I360Viewer',
+
     props: {
         imagePath: {
             type: String,
@@ -207,7 +202,10 @@ export default {
             loopTimeoutId: 0,
             images: [],
             imageData: [],
-            playing: false
+            playing: false,
+
+
+            featurePoint: {}
         }
     },
     watch: {
@@ -236,7 +234,7 @@ export default {
                 this.$refs.viewerContainer.classList.add('v360-fullscreen')
                 /* this.$refs.enterFullScreenIcon.style.display = 'none'
                 this.$refs.leaveFullScreenIcon.style.display = 'block' */
-                
+
             }
             this.setImage()
         },
@@ -260,7 +258,7 @@ export default {
         initData(){
             this.checkMobile()
             this.loadInitialImage()
-            
+
             this.canvas = this.$refs.imageContainer
             this.ctx = this.canvas.getContext('2d')
             this.attachEvents();
@@ -366,6 +364,7 @@ export default {
             window.clearTimeout(this.loopTimeoutId);
         },
         loopImages() {
+
             if (this.activeImage == this.stopLoopAtIndex && this.currentLoop == this.loop) {
                 this.stop()
                 return
@@ -395,7 +394,7 @@ export default {
             this.isMobile = !!('ontouchstart' in window || navigator.msMaxTouchPoints);
         },
         loadInitialImage(){
-            this.currentImage = this.imageData[0] 
+            this.currentImage = this.imageData[0]
             this.setImage()
         },
         resizeWindow(){
@@ -424,15 +423,15 @@ export default {
         bindPanModeEvents(){
             this.$refs.viewport.removeEventListener('touchend', this.touchEnd);
             this.$refs.viewport.removeEventListener('touchstart', this.touchStart);
-            this.$refs.viewport.removeEventListener('touchmove', this.touchMove); 
+            this.$refs.viewport.removeEventListener('touchmove', this.touchMove);
 
             this.$refs.viewport.addEventListener('touchend', this.stopDragging);
             this.$refs.viewport.addEventListener('touchstart', this.startDragging);
-            this.$refs.viewport.addEventListener('touchmove', this.doDragging); 
+            this.$refs.viewport.addEventListener('touchmove', this.doDragging);
 
             this.$refs.viewport.removeEventListener('mouseup', this.stopMoving);
             this.$refs.viewport.removeEventListener('mousedown', this.startMoving);
-            this.$refs.viewport.removeEventListener('mousemove', this.doMoving); 
+            this.$refs.viewport.removeEventListener('mousemove', this.doMoving);
 
             this.$refs.viewport.addEventListener('mouseup', this.stopDragging);
             this.$refs.viewport.addEventListener('mousedown', this.startDragging);
@@ -443,16 +442,16 @@ export default {
         bind360ModeEvents(){
             this.$refs.viewport.removeEventListener('touchend', this.stopDragging);
             this.$refs.viewport.removeEventListener('touchstart', this.startDragging);
-            this.$refs.viewport.removeEventListener('touchmove', this.doDragging); 
+            this.$refs.viewport.removeEventListener('touchmove', this.doDragging);
 
             this.$refs.viewport.addEventListener('touchend', this.touchEnd);
             this.$refs.viewport.addEventListener('touchstart', this.touchStart);
-            this.$refs.viewport.addEventListener('touchmove', this.touchMove); 
+            this.$refs.viewport.addEventListener('touchmove', this.touchMove);
 
             this.$refs.viewport.removeEventListener('mouseup', this.stopDragging);
             this.$refs.viewport.removeEventListener('mousedown', this.startDragging);
-            this.$refs.viewport.removeEventListener('mousemove', this.doDragging); 
-            
+            this.$refs.viewport.removeEventListener('mousemove', this.doDragging);
+
             this.$refs.viewport.addEventListener('mouseup', this.stopMoving);
             this.$refs.viewport.addEventListener('mousedown', this.startMoving);
             this.$refs.viewport.addEventListener('mousemove', this.doMoving);
@@ -471,7 +470,7 @@ export default {
         },
         zoomOut(evt) {
             if(this.disableZoom) return;
-            
+
             this.lastX = this.centerX;
             this.lastY = this.centerY
             this.zoom(-2)
@@ -495,7 +494,7 @@ export default {
         },
         setImage(cached = false){
             this.currentLeftPosition = this.currentTopPosition = 0
-            
+
             if(!cached){
                 this.currentCanvasImage = new Image()
                 this.currentCanvasImage.crossOrigin='anonymous'
@@ -522,7 +521,7 @@ export default {
 
                 this.redraw()
             }
-            
+
         },
         redraw(){
 
@@ -540,10 +539,10 @@ export default {
 
                 this.centerX = this.currentCanvasImage.width*ratio/2
                 this.centerY = this.currentCanvasImage.height*ratio/2
-                
+
                 //center image
                 this.ctx.drawImage(this.currentCanvasImage, this.currentLeftPosition, this.currentTopPosition, this.currentCanvasImage.width, this.currentCanvasImage.height,
-                            centerShift_x,centerShift_y,this.currentCanvasImage.width*ratio, this.currentCanvasImage.height*ratio);  
+                            centerShift_x,centerShift_y,this.currentCanvasImage.width*ratio, this.currentCanvasImage.height*ratio);
 
                 this.addHotspots()
 
@@ -560,59 +559,69 @@ export default {
 
             for(let c in currentImageHotspots){
                 let hotspotElement = currentImageHotspots[c]
-                
+
+                //console.log(hotspotElement,"hotspotElement");
+
                 let hotspotPositionX, hotspotPositionY
-                
+
                 if(this.canvas.width > this.$refs.viewport.clientWidth){
                     /* hotspotPositionX = hotspotElement.x * this.$refs.viewport.clientWidth * this.currentScale
                     hotspotPositionY = hotspotElement.y * this.$refs.viewport.clientHeight * this.currentScale */
-                    hotspotPositionX = hotspotElement.x * this.$refs.viewport.clientWidth
-                    hotspotPositionY = hotspotElement.y * this.$refs.viewport.clientHeight
+                    hotspotPositionX = hotspotElement.x
+                    hotspotPositionY = hotspotElement.y
                 }else{
                     hotspotPositionX = hotspotElement.x * this.canvas.width
                     hotspotPositionY = hotspotElement.y * this.canvas.height
                 }
-                
+
                 let divElement = document.createElement('div')
                 let spanElement = document.createElement('span')
-                let imgElement = document.createElement('img')
-                
-                imgElement.className = 'hotspot-icon'
-                imgElement.src = hotspotElement.icon
+                let hotCircle = document.createElement('div')
+
+                hotCircle.className = 'hotspot-icon'
+                //imgElement.src = hotspotElement.icon
                 spanElement.className = 'tooltiptext'
                 spanElement.innerHTML = hotspotElement.text
                 divElement.className = 'tooltip'
                 divElement.style.left = hotspotPositionX + 'px'
                 divElement.style.top = hotspotPositionY + 'px'
-                divElement.appendChild(imgElement)
+                divElement.appendChild(hotCircle)
                 divElement.appendChild(spanElement)
 
-                imgElement.addEventListener('click', (e) => {
+                hotCircle.addEventListener('click', (e) => {
                     e.preventDefault()
                     console.log('show edit hotspot form')
                     this.selectedHotspot = hotspotElement
-                    this.openHotspotForm(true)
+                    this.openHotspotForm(true, hotspotElement.id)
                 })
 
                 if(hotspotElement.action){
                     console.log('add this function: ' + hotspotElement.action)
                 }
-                
+
                 this.$refs.viewport.appendChild(divElement)
                 //console.log('draw')
                 //this.ctx.drawImage(this.currentCanvasImage, hotspotElement.x*this.canvas.width, hotspotElement.y*this.canvas.height, 10, 10)
             }
         },
+
+        openHotspotForm(e, id){
+
+            console.log("clicked hot img",id);
+            this.$emit("hotWidget", id)
+
+        },
+
         clearHotspots(){
             let hotspotButtons = document.getElementById(this.identifier).querySelectorAll('.tooltip')
-            
+
             if(hotspotButtons.length)
                 hotspotButtons.forEach(element => element.remove())
         },
         onMove(pageDirection){
             if (pageDirection - this.movementStart >= this.speedFactor) {
                 let itemsSkippedRight = Math.floor((pageDirection - this.movementStart) / this.speedFactor) || 1;
-                
+
                 this.movementStart = pageDirection;
 
                 if (this.spinReverse) {
@@ -626,7 +635,7 @@ export default {
             } else if (this.movementStart - pageDirection >= this.speedFactor) {
 
                 let itemsSkippedLeft = Math.floor((this.movementStart - pageDirection) / this.speedFactor) || 1;
-                
+
                 this.movementStart = pageDirection;
 
                 if (this.spinReverse) {
@@ -685,7 +694,7 @@ export default {
             } else {
                 this.activeImage = (this.activeImage + itemsSkipped) % this.amount || this.amount;
             }
-            
+
             this.update()
         },
         moveActiveIndexDown(itemsSkipped) {
@@ -703,7 +712,7 @@ export default {
                     this.activeImage -= itemsSkipped;
                 }
             }
-            
+
             this.update()
         },
         update() {
@@ -745,11 +754,11 @@ export default {
                 this.lastX = evt.offsetX || (evt.pageX - this.canvas.offsetLeft);
 			    this.lastY = evt.offsetY || (evt.pageY - this.canvas.offsetTop);
             }
-            
+
 			this.dragStart = this.ctx.transformedPoint(this.lastX,this.lastY);
         },
         doDragging(evt){
-            
+
             if(this.isMobile){
                 this.lastX = evt.touches[0].offsetX || (evt.touches[0].pageX - this.canvas.offsetLeft);
 			    this.lastY = evt.touches[0].offsetY || (evt.touches[0].pageY - this.canvas.offsetTop);
@@ -757,7 +766,7 @@ export default {
                 this.lastX = evt.offsetX || (evt.pageX - this.canvas.offsetLeft);
 			    this.lastY = evt.offsetY || (evt.pageY - this.canvas.offsetTop);
             }
-            
+
             if (this.dragStart){
 				let pt = this.ctx.transformedPoint(this.lastX,this.lastY);
 				this.ctx.translate(pt.x-this.dragStart.x,pt.y-this.dragStart.y);
@@ -791,11 +800,11 @@ export default {
                 else
                     this.currentScale = 1
             }
-            
+
             if(this.currentScale > 1){
                 let pt = this.ctx.transformedPoint(this.lastX,this.lastY);
                 this.ctx.translate(pt.x,pt.y);
-                
+
                 //console.log(this.currentScale)
                 this.ctx.scale(factor,factor);
                 this.ctx.translate(-pt.x,-pt.y);
@@ -807,12 +816,12 @@ export default {
 
             this.lastX = evt.offsetX || (evt.pageX - this.canvas.offsetLeft);
             this.lastY = evt.offsetY || (evt.pageY - this.canvas.offsetTop);
-            
+
             var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.deltaY ? -evt.deltaY : 0;
-            
+
 			if (delta) this.zoom(delta);
             return evt.preventDefault() && false;
-                
+
         },
         trackTransforms(ctx){
 
@@ -820,7 +829,7 @@ export default {
                 var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
                 var xform = svg.createSVGMatrix();
                 this.ctx.getTransform = function(){ return xform; };
-                
+
                 var savedTransforms = [];
                 var save = ctx.save;
                 this.ctx.save = () => {
@@ -873,11 +882,28 @@ export default {
 
                 resolve(this.ctx)
             })
-            
+
         },
         toggleFullScreen(){
             this.isFullScreen = !this.isFullScreen
         },
+
+        clickfeature () {
+              this.$emit("customChange")
+          }
     }
 }
 </script>
+<style>
+.hotspot-icon{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #000;
+}
+.feature{
+    position: relative;
+    z-index: 11;
+    cursor: pointer;
+}
+</style>

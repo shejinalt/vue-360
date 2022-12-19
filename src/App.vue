@@ -2,18 +2,24 @@
   <div id="app">
     <div class="container">
       <div class="row">
-        
+
         <!-- Example 1 - Car -->
         <div class="col-12 mb-4 card p-0">
-          <vue-three-sixty 
+          <vue-three-sixty
             :amount=36
             imagePath="https://scaleflex.cloudimg.io/v7/demo/suv-orange-car-360"
             fileName="orange-{index}.jpg"
             spinReverse
-            autoplay
             buttonClass="dark"
             scrollImage
+
+            @hotWidget="hotWidget"
+            :hotspots=myHotspots
+
+
+
           >
+
             <template v-slot:header>
               <div class="v360-header text-light bg-dark">
                   <span class="v360-header-title">36 Images - Autoplay (1 loop) - Reverse Spin</span>
@@ -25,50 +31,7 @@
         </div>
         <!--/ Example 1 - Car -->
 
-        <div class="col-12 mb-4 text-center card">
-          <h4>More Examples</h4>
-          <p>A simple, interactive resource that can be used to provide a virtual tour of your product.</p>
-          <p>100% Mobile Responsive with Touch Actions</p>
-          <p>Features include Zoom, Pan, Autoplay, Loop, Crop, Reverse Spin, Show/Hide Header, and more. <a href="https://github.com/rajeevgade/vue-360">Click here for more information.</a> </p>
-        </div>
 
-        <!-- Example 2 - Phone - 36 images -->
-        <div class="col-12 col-md-6 mb-4 card p-0">
-          <!-- <h4 class="my-2 text-center">36 Images</h4> -->
-          <vue-three-sixty 
-            :amount=36
-            imagePath="https://scaleflex.cloudimg.io/v7/demo/vivo-mobile"
-            fileName="product-{index}.jpg"
-            buttonClass="dark"
-          >
-            <template v-slot:header>
-              <div class="v360-header text-light bg-dark">
-                  <span class="v360-header-title">36 Images</span>
-                  <span class="v360-header-description"></span>
-              </div>
-            </template>
-          </vue-three-sixty>
-        </div>
-        <!--/ Example 2 - Phone - 36 images -->
-
-        <!-- Example 3 - Motorcycle - 36 images -->
-        <div class="col-12 col-md-6 mb-4 card p-0">
-          <!-- <h4 class="my-2 text-center">72 Images - Box Shadow</h4> -->
-          <vue-three-sixty
-            :amount=233
-            imagePath="https://scaleflex.cloudimg.io/v7/demo/jawa-motorcycle"
-            fileName="{index}.jpeg"
-            boxShadow
-          >
-            <template v-slot:header>
-              <div class="v360-header text-dark bg-light">
-                  <span class="v360-header-title">72 Images - Box Shadow</span>
-                  <span class="v360-header-description"></span>
-              </div>
-            </template>
-          </vue-three-sixty>
-        </div>
-        <!--/ Example 3 - Motorcycle - 36 images -->
 
       </div>
     </div>
@@ -81,10 +44,34 @@
 
 export default {
   name: 'app',
+
+  props: {
+
+  },
+  data() {
+        return {
+
+            myHotspots:[{
+                id: 2,
+                frame : 2,
+                text:"this is hotspot",
+                x: 400,
+                y:300,
+
+                //icon:"https://icon-library.com/images/icon-p/icon-p-15.jpg",
+                // action: function hotWidget(params) {
+                //   console.log("xx");
+                // }
+
+            }],
+
+        }
+    },
   mounted() {
     //safari zoom bug fix
     this.disableZoomin();
   },
+
   methods: {
     disableZoomin(){
       document.addEventListener("gesturestart", function (e) {
@@ -95,12 +82,17 @@ export default {
         e.preventDefault();
         document.body.style.zoom = 0.99;
       });
-      
+
       document.addEventListener("gestureend", function (e) {
           e.preventDefault();
           document.body.style.zoom = 1;
       });
-    }
+    },
+    hotWidget(id){
+      console.log(id,"trigger from app");
+    },
+
+    //
   }
 }
 </script>
